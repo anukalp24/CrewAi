@@ -10,14 +10,16 @@
 from  fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel , Field , field_validator
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.store.memory import InMemoryStore
 from langchain_core.messages import SystemMessage
 from datetime import date
 
+
+from langgraph.checkpoint.mongodb import MongoDBSaver
+from database import client
 # basemodel is a base class and pydantic is a validation model
 class ChatRequest(BaseModel):
   question: str = Field(min_length=1 , max_length=10_000 , strict=True)
+  chat_id: str
 
 today = date.today().strftime("%B %d, %Y")
 
@@ -36,6 +38,7 @@ from langchain_core.messages import AIMessage
 llm = ChatGroq(model="openai/gpt-oss-120b")
 from agents.deep_agent import supervisor
 builder = StateGraph(CrewAi)
+
 
 
 # The add_messages reducer works like this:
@@ -74,14 +77,14 @@ builder.add_conditional_edges("orchestrator" , route_request , {"direct" : "dire
 builder.add_edge("direct_answer" , END)
 builder.add_edge("deep_agent" , END)
 
-checkPointer = MemorySaver()
-graph = builder.compile()
+checkpointer = MongoDBSaver(client=client , db_name="CREW_AI")
+graph = builder.compile(checkpointer=checkpointer)
 
 def Chat_function(request : ChatRequest):
  question = request.question
-
+ chat_id = request.chat_id
  try:
-   result = graph.invoke({"messages" : [{"role" : "user" , "content" : question}]})
+   result = graph.invoke({"messages" : [{"role" : "user" , "content" : question}]} , config={"configurable" : {"thread_id" : chat_id}})
   #  after state update this invoke will return the full latest state
    return JSONResponse(
             status_code=200,
@@ -95,4 +98,4 @@ def Chat_function(request : ChatRequest):
     print(error)
     return JSONResponse(status_code=500 , content= {"data" : "Internal server error"})
 
- 
+#  MongoDBSaver is a LangGraph checkpointer that saves graph-state checkpoints directly to MongoDB as the graph executes.
