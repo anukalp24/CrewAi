@@ -62,7 +62,6 @@ body: JSON.stringify(data)
   const handlechange = (e)=>{
     setdata({... data , [e.target.name] : e.target.value})
   }
-
   return (
     <main className="auth-page">
 

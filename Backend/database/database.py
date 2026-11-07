@@ -8,3 +8,4 @@ client = MongoClient(os.getenv("MONGODB_URI"))
 db = client["crew_ai"]
 
 users = db["users"] 
+chats = db["chats"]

@@ -1,6 +1,6 @@
 
  
-from database import users
+from Backend.database.database import users
 import re
 import os
 import jwt
@@ -81,7 +81,6 @@ async def login (data: Login):
      samesite="none",
      max_age=30 * 24 * 60 * 60
 )
-
   return response
 
  except Exception as error:

@@ -2,7 +2,7 @@
 # this itself an agent
 # what is an ai agent??
 # ans : an ai agent is a ai system that uses an llm to understand a task , make decision , chooses tools and take actions to acheive a goal , it can analyze tool result , and can decide what to do next , it can repeat the same tool mamany times until the taks is done
-# what is an agentic ai??
+# what is an agentic ai?? 
 # http parser parses everyything except body
 
 
@@ -15,7 +15,7 @@ from datetime import date
 
 
 from langgraph.checkpoint.mongodb import MongoDBSaver
-from database import client
+from Backend.database.database import client
 # basemodel is a base class and pydantic is a validation model
 class ChatRequest(BaseModel):
   question: str = Field(min_length=1 , max_length=10_000 , strict=True)
@@ -68,6 +68,8 @@ def deep_agent(state):
 def route_request(state):
     return state["route"] 
  # state update tab hi hota hain jab tum apne node se result ko return karte ho
+
+ 
 builder.add_node("orchestrator" , orchestrator)
 builder.add_node("direct_answer" , direct_ans )
 builder.add_node("deep_agent" , deep_agent  )
@@ -92,7 +94,6 @@ def Chat_function(request : ChatRequest):
         )
  
 
- 
  except Exception as error:
     # return JSONResponse(status_code=500 , content= jsonable_encoder({"data" : result["messages"]}))
     print(error)

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from routes.Chat import Chat
-
+from datetime import data , datetime  , timezone
 load_dotenv()
 
 app = FastAPI()

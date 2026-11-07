@@ -7,7 +7,7 @@ import re
 import bcrypt
 from brevo import AsyncBrevo
 import secrets
-from database import users
+from Backend.database.database import users
 from datetime import datetime, timedelta
 class Signin(BaseModel):
     name: str
